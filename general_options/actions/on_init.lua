@@ -20,34 +20,54 @@ JOEGNIS_CLASS_WA.CONFIG_GROUP_QUATERNARY2 = "quaternary2_icon_settings"
 ---@param icon_width number
 ---@param icon_height  number
 ---@param max_num_per_row  number
----@param horizontal_spacing  number
----@param vertical_spacing  number
----@param reverse_sort boolean
+---@param row_spacing  number
+---@param column_spacing  number
+---@param grow_along_y boolean
+---@param center_row boolean
+---@param reverse_row_direction boolean
+---@param reverse_col_direction boolean
 function JOEGNIS_CLASS_WA.CustomGrowCenter(new_positions, active_regions, group, icon_width, icon_height, max_num_per_row,
-                                           horizontal_spacing, vertical_spacing, reverse_sort)
+                                           row_spacing, column_spacing, grow_along_y, center_row,
+                                           reverse_row_direction, reverse_col_direction)
     local num_regions = #active_regions
     if num_regions < 0 then return end
 
     JOEGNIS_CLASS_WA.styleIconsInGroup(group, icon_width, icon_height)
 
+    --[[
+        Rows either grow along x or y axis.
+    ]]
     local i_region = 1
     local regions_left = num_regions
-    local position_y = 0
-    local direction_x = reverse_sort and -1 or 1
-    -- Put icons line by line
+    local position_col = 0
+    local direction_row = reverse_row_direction and -1 or 1
+    local direction_col = reverse_col_direction and -1 or 1
+    -- Put icons row by row
     while regions_left > 0 do
-        local num_reg_row = min(regions_left, max_num_per_row)
-        local row_length = (num_reg_row - 1) * (icon_width + horizontal_spacing)
-        local position_x = -row_length * direction_x / 2
-        for _ = 1, num_reg_row do
-            new_positions[i_region] = { position_x, position_y }
+        -- Number of icons (regions) in current row
+        local num_icons = min(regions_left, max_num_per_row)
+        local row_length = (num_icons - 1) * (icon_width + row_spacing)
 
-            position_x = position_x + (icon_width + horizontal_spacing) * direction_x
+        local position_row
+        if center_row then
+            position_row = -row_length / 2 * direction_row
+        else
+            position_row = 0
+        end
+
+        for _ = 1, num_icons do
+            if grow_along_y then
+                new_positions[i_region] = { position_col, position_row }
+            else
+                new_positions[i_region] = { position_row, position_col }
+            end
+
+            position_row = position_row + (icon_width + row_spacing) * direction_row
             i_region = i_region + 1
         end
 
-        position_y = position_y - (icon_height + vertical_spacing)
-        regions_left = regions_left - num_reg_row
+        position_col = position_col - (icon_height + column_spacing) * direction_col
+        regions_left = regions_left - num_icons
     end
 end
 
@@ -77,13 +97,17 @@ function JOEGNIS_CLASS_WA.readConfigAndCustomGrow(config_group, group, new_posit
     local icon_width = JOEGNIS_CLASS_WA.config[config_group].width
     local icon_height = JOEGNIS_CLASS_WA.config[config_group].height
     local max_num_per_row = JOEGNIS_CLASS_WA.config[config_group].max_num_per_row
-    local horizontal_spacing = JOEGNIS_CLASS_WA.config[config_group].horizontal_spacing
-    local vertical_spacing = JOEGNIS_CLASS_WA.config[config_group].vertical_spacing
-    local reverse_sort = JOEGNIS_CLASS_WA.config[config_group].reverse_sort
+    local row_spacing = JOEGNIS_CLASS_WA.config[config_group].row_spacing
+    local column_spacing = JOEGNIS_CLASS_WA.config[config_group].column_spacing
+    local grow_along_y = JOEGNIS_CLASS_WA.config[config_group].grow_along_y
+    local center_row = JOEGNIS_CLASS_WA.config[config_group].center_row
+    local reverse_row_direction = JOEGNIS_CLASS_WA.config[config_group].reverse_row_direction
+    local reverse_col_direction = JOEGNIS_CLASS_WA.config[config_group].reverse_col_direction
 
     JOEGNIS_CLASS_WA.CustomGrowCenter(new_positions, active_regions,
         group, icon_width, icon_height, max_num_per_row,
-        horizontal_spacing, vertical_spacing, reverse_sort)
+        row_spacing, column_spacing, grow_along_y, center_row,
+        reverse_row_direction, reverse_col_direction)
 end
 
 --Init
