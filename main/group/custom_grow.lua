@@ -1,7 +1,10 @@
 -- Run on: changed
-function(newPositions, activeRegions)
-    if JOEGNIS_CLASS_WA then
-        local config_group = JOEGNIS_CLASS_WA.CONFIG_GROUP_MAIN
-        JOEGNIS_CLASS_WA.readConfigAndCustomGrow(config_group, aura_env.id, newPositions, activeRegions)
+function grow(newPositions, activeRegions)
+    --function(newPositions, activeRegions)
+    local SPEC = aura_env.id:gsub(".*%- JWA %- ", "")
+    local JOEGNIS_CLASS_WA = JOEGNIS_CLASS_WA and JOEGNIS_CLASS_WA[SPEC] or {}
+
+    if JOEGNIS_CLASS_WA and JOEGNIS_CLASS_WA.readConfigAndCustomGrow then
+        JOEGNIS_CLASS_WA.readConfigAndCustomGrow(aura_env.id, newPositions, activeRegions)
     end
 end

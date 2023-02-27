@@ -1,17 +1,14 @@
 --Global definitions
 JOEGNIS_CLASS_WA = JOEGNIS_CLASS_WA or {}
---Reads class name from group name so we should name the group exactly as this.
---This also means we only support one group per class. This may be changed later.
-local class = aura_env.id:gsub("General Options %- JWA %- ", "")
-JOEGNIS_CLASS_WA.CLASS = class
+-- Infers spec name from group name so we should name the group exactly as this.
+local SPEC = aura_env.id:gsub("General Options %- JWA %- ", "")
+aura_env.SPEC = SPEC  -- not sharing this globally to avoid pollution
 
-JOEGNIS_CLASS_WA.config = aura_env.config
-JOEGNIS_CLASS_WA.CONFIG_GROUP_MAIN = "main_icon_settings"
-JOEGNIS_CLASS_WA.CONFIG_GROUP_SECOND = "second_icon_settings"
-JOEGNIS_CLASS_WA.CONFIG_GROUP_TERTIARY1 = "tertiary1_icon_settings"
-JOEGNIS_CLASS_WA.CONFIG_GROUP_TERTIARY2 = "tertiary2_icon_settings"
-JOEGNIS_CLASS_WA.CONFIG_GROUP_QUATERNARY1 = "quaternary1_icon_settings"
-JOEGNIS_CLASS_WA.CONFIG_GROUP_QUATERNARY2 = "quaternary2_icon_settings"
+-- Separate out environments of each spec
+JOEGNIS_CLASS_WA[SPEC] = JOEGNIS_CLASS_WA[SPEC] or {}
+local JOEGNIS_CLASS_WA = JOEGNIS_CLASS_WA[SPEC]
+JOEGNIS_CLASS_WA.config = {}
+JOEGNIS_CLASS_WA.config[SPEC] = aura_env.config
 
 ---Custom grow function
 ---@param new_positions any from WA custom grow function
@@ -88,21 +85,27 @@ function JOEGNIS_CLASS_WA.styleIconsInGroup(group, icon_width, icon_height)
         end
     end
 end
+-- For use in triggers
+aura_env.styleIconsInGroup = JOEGNIS_CLASS_WA.styleIconsInGroup
 
----@param config_group string config group name
 ---@param group string dynamic group name
 ---@param new_positions any
 ---@param active_regions any
-function JOEGNIS_CLASS_WA.readConfigAndCustomGrow(config_group, group, new_positions, active_regions)
-    local icon_width = JOEGNIS_CLASS_WA.config[config_group].width
-    local icon_height = JOEGNIS_CLASS_WA.config[config_group].height
-    local max_num_per_row = JOEGNIS_CLASS_WA.config[config_group].max_num_per_row
-    local row_spacing = JOEGNIS_CLASS_WA.config[config_group].row_spacing
-    local column_spacing = JOEGNIS_CLASS_WA.config[config_group].column_spacing
-    local grow_along_y = JOEGNIS_CLASS_WA.config[config_group].grow_along_y
-    local center_row = JOEGNIS_CLASS_WA.config[config_group].center_row
-    local reverse_row_direction = JOEGNIS_CLASS_WA.config[config_group].reverse_row_direction
-    local reverse_col_direction = JOEGNIS_CLASS_WA.config[config_group].reverse_col_direction
+function JOEGNIS_CLASS_WA.readConfigAndCustomGrow(group, new_positions, active_regions)
+    -- Infers config group name:
+    -- "Main - JWA - RestoDruid" -> "Main" -> "main_icon_settings"
+    local config_group = group:gsub("%s+%- JWA %-.*", "")
+    config_group = config_group:gsub("%s+", "_")
+    config_group = strlower(config_group) .. "_icon_settings"
+    local icon_width = JOEGNIS_CLASS_WA.config[SPEC][config_group].width
+    local icon_height = JOEGNIS_CLASS_WA.config[SPEC][config_group].height
+    local max_num_per_row = JOEGNIS_CLASS_WA.config[SPEC][config_group].max_num_per_row
+    local row_spacing = JOEGNIS_CLASS_WA.config[SPEC][config_group].row_spacing
+    local column_spacing = JOEGNIS_CLASS_WA.config[SPEC][config_group].column_spacing
+    local grow_along_y = JOEGNIS_CLASS_WA.config[SPEC][config_group].grow_along_y
+    local center_row = JOEGNIS_CLASS_WA.config[SPEC][config_group].center_row
+    local reverse_row_direction = JOEGNIS_CLASS_WA.config[SPEC][config_group].reverse_row_direction
+    local reverse_col_direction = JOEGNIS_CLASS_WA.config[SPEC][config_group].reverse_col_direction
 
     JOEGNIS_CLASS_WA.CustomGrowCenter(new_positions, active_regions,
         group, icon_width, icon_height, max_num_per_row,
