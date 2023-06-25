@@ -43,7 +43,7 @@ function JWA_SPEC.CustomGrowCenter(new_positions, active_regions, group, icon_wi
     while regions_left > 0 do
         -- Number of icons (regions) in current row
         local num_icons = min(regions_left, max_num_per_row)
-        local row_length = (num_icons - 1) * (icon_width + row_spacing)
+        local row_length = (num_icons - 1) * (icon_width + column_spacing)
 
         local position_row
         if center_row then
@@ -59,11 +59,11 @@ function JWA_SPEC.CustomGrowCenter(new_positions, active_regions, group, icon_wi
                 new_positions[i_region] = { position_row, position_col }
             end
 
-            position_row = position_row + (icon_width + row_spacing) * direction_row
+            position_row = position_row + (icon_width + column_spacing) * direction_row
             i_region = i_region + 1
         end
 
-        position_col = position_col - (icon_height + column_spacing) * direction_col
+        position_col = position_col - (icon_height + row_spacing) * direction_col
         regions_left = regions_left - num_icons
     end
 end
