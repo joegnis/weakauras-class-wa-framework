@@ -2,7 +2,7 @@
 JOEGNIS_CLASS_WA = JOEGNIS_CLASS_WA or {}
 -- Infers spec name from group name so we should name the group exactly as this.
 local SPEC = aura_env.id:gsub("General Options %- JWA %- ", "")
-aura_env.SPEC = SPEC  -- not sharing this globally to avoid pollution
+aura_env.SPEC = SPEC -- not sharing this globally to avoid pollution
 
 -- Separate out environments of each spec
 JOEGNIS_CLASS_WA[SPEC] = JOEGNIS_CLASS_WA[SPEC] or {}
@@ -24,8 +24,8 @@ JWA_SPEC.config[SPEC] = aura_env.config
 ---@param reverse_row_direction boolean
 ---@param reverse_col_direction boolean
 function JWA_SPEC.CustomGrowCenter(new_positions, active_regions, group, icon_width, icon_height, max_num_per_row,
-                                           row_spacing, column_spacing, grow_along_y, center_row,
-                                           reverse_row_direction, reverse_col_direction)
+                                   row_spacing, column_spacing, grow_along_y, center_row,
+                                   reverse_row_direction, reverse_col_direction)
     local num_regions = #active_regions
     if num_regions < 0 then return end
 
@@ -85,6 +85,7 @@ function JWA_SPEC.styleIconsInGroup(group, icon_width, icon_height)
         end
     end
 end
+
 -- For use in triggers
 aura_env.styleIconsInGroup = JWA_SPEC.styleIconsInGroup
 
